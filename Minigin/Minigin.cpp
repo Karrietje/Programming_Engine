@@ -7,9 +7,13 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include <SDL.h>
-#include "TextObject.h"
 #include "GameObject.h"
 #include "Scene.h"
+#include "Time.h"
+#include "TransformComponent.h"
+#include "TextComponent.h"
+#include "TextureComponent.h"
+#include "FPSComponent.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -45,18 +49,45 @@ void dae::Minigin::LoadGame() const
 	auto& scene = SceneManager::GetInstance().CreateScene("Demo");
 
 	auto go = std::make_shared<GameObject>();
-	go->SetTexture("background.jpg");
+
+	auto textureComp = std::make_shared<TextureComponent>();
+	textureComp->SetTexture("background.jpg");
+	go->AddComponent(ComponentType::TextureComponent, textureComp);
+
 	scene.Add(go);
 
 	go = std::make_shared<GameObject>();
-	go->SetTexture("logo.png");
-	go->SetPosition(216, 180);
+
+	textureComp = std::make_shared<TextureComponent>();
+	textureComp->SetTexture("logo.png");
+	go->AddComponent(ComponentType::TextureComponent, textureComp);
+
+	go->GetTransform()->SetPosition(216, 180);
+
 	scene.Add(go);
 
+	go = std::make_shared<GameObject>();
+
 	auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto to = std::make_shared<TextObject>("Programming 4 Assignment", font);
-	to->SetPosition(80, 20);
-	scene.Add(to);
+	auto textComp = std::make_shared<TextComponent>();
+	textComp->SetFont(font);
+	textComp->SetText("Programming 4 Assignment");
+	go->AddComponent(ComponentType::TextComponent, textComp);
+
+	go->GetTransform()->SetPosition(80, 20);
+
+	scene.Add(go);
+
+	go = std::make_shared<GameObject>();
+
+	font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
+	auto FPSComp = std::make_shared<FPSComponent>();
+	FPSComp->SetFont(font);
+	go->AddComponent(ComponentType::FPSComponent, FPSComp);
+
+	go->GetTransform()->SetPosition(10, 10);
+
+	scene.Add(go);
 }
 
 void dae::Minigin::Cleanup()
@@ -81,17 +112,24 @@ void dae::Minigin::Run()
 		auto& sceneManager = SceneManager::GetInstance();
 		auto& input = InputManager::GetInstance();
 
+		auto lastTime = high_resolution_clock::now();
+		float lag = 0.f;
 		bool doContinue = true;
 		while (doContinue)
 		{
 			const auto currentTime = high_resolution_clock::now();
-			
+			float deltaTime = duration<float>(currentTime - lastTime).count();
+			lastTime = currentTime;
+			lag += deltaTime;
 			doContinue = input.ProcessInput();
-			sceneManager.Update();
-			renderer.Render();
 			
-			auto sleepTime = duration_cast<duration<float>>(currentTime + milliseconds(MsPerFrame) - high_resolution_clock::now());
-			this_thread::sleep_for(sleepTime);
+			while (lag >= Time::GetInstance().GetMsPerUpdate())
+			{
+				Time::GetInstance().Update(Time::GetInstance().GetMsPerUpdate());
+				sceneManager.Update(Time::GetInstance().GetElapsed());
+				lag -= Time::GetInstance().GetMsPerUpdate();
+			}
+			renderer.Render();
 		}
 	}
 

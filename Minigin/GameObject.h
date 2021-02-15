@@ -1,20 +1,24 @@
 #pragma once
-#include "Transform.h"
 #include "SceneObject.h"
+#include "Utils.h"
+#include <unordered_map>
 
 namespace dae
 {
+	class Component;
+	class TransformComponent;
 	class Texture2D;
 	class GameObject : public SceneObject
 	{
 	public:
-		void Update() override;
+		void Update(float elapsedSec) override;
 		void Render() const override;
 
-		void SetTexture(const std::string& filename);
-		void SetPosition(float x, float y);
+		void AddComponent(ComponentType type, std::shared_ptr<Component> pComponent);
 
-		GameObject() = default;
+		inline std::shared_ptr<TransformComponent> GetTransform() const;
+
+		GameObject();
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -22,7 +26,12 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
-		Transform m_Transform;
-		std::shared_ptr<Texture2D> m_Texture{};
+		std::shared_ptr<TransformComponent> m_pTransform;
+		std::unordered_multimap<ComponentType, std::shared_ptr<Component>> m_pComponents;
 	};
+
+	inline std::shared_ptr<TransformComponent> dae::GameObject::GetTransform() const
+	{
+		return m_pTransform;
+	}
 }
