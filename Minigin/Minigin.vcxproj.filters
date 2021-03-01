@@ -19,6 +19,12 @@
     <Filter Include="Time">
       <UniqueIdentifier>{fcd31798-72c3-4f37-8bb3-a028a124e0e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Observers">
+      <UniqueIdentifier>{72b4129e-ff5e-431b-8256-ac68b77bef65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{d3e1dd8c-1fc1-413c-8edf-0cc93e6987e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniginPCH.h">
@@ -63,9 +69,6 @@
     <ClInclude Include="SceneObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TransformComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -77,6 +80,30 @@
     </ClInclude>
     <ClInclude Include="FPSComponent.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="SubjectComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthObserver.h">
+      <Filter>Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PointComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PointObserver.h">
+      <Filter>Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +157,24 @@
     </ClCompile>
     <ClCompile Include="FPSComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="SubjectComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthObserver.cpp">
+      <Filter>Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="PointComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PointObserver.cpp">
+      <Filter>Observers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

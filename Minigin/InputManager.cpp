@@ -1,12 +1,14 @@
 #include "MiniginPCH.h"
 #include "InputManager.h"
 #include <SDL.h>
+#include "Command.h"
 
 
 bool dae::InputManager::ProcessInput()
 {
-	ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
-	XInputGetState(0, &m_CurrentState);
+	//Wat in m_ControllerState zit leegmaken =>De grootte van input_State
+	ZeroMemory(&m_ControllerState, sizeof(XINPUT_KEYSTROKE));
+	XInputGetKeystroke(0, 0, &m_ControllerState);
 
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
@@ -21,22 +23,33 @@ bool dae::InputManager::ProcessInput()
 		}
 	}
 
+	for (std::pair<ControllerInput, std::shared_ptr<Command>> command : m_pControllerCommands)
+	{
+		if (command.first.input == m_ControllerState.VirtualKey)
+		{
+			switch (command.first.inputType)
+			{
+			case InputType::KeyDown:
+				if (m_ControllerState.Flags & XINPUT_KEYSTROKE_KEYDOWN)
+					command.second->Execute();
+				break;
+			case InputType::KeyHold:
+				if (m_ControllerState.Flags & XINPUT_KEYSTROKE_REPEAT)
+					command.second->Execute();
+				break;
+			case InputType::KeyUp:
+				if (m_ControllerState.Flags & XINPUT_KEYSTROKE_KEYUP)
+					command.second->Execute();
+				break;
+			default:
+				break;
+			}
+		}
+	}
 	return true;
 }
 
-bool dae::InputManager::IsPressed(ControllerButton button) const
+void dae::InputManager::AddCommand(ControllerInput input, const std::shared_ptr<Command>& command)
 {
-	switch (button)
-	{
-	case ControllerButton::ButtonA:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_A;
-	case ControllerButton::ButtonB:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_B;
-	case ControllerButton::ButtonX:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_X;
-	case ControllerButton::ButtonY:
-		return m_CurrentState.Gamepad.wButtons & XINPUT_GAMEPAD_Y;
-	default: return false;
-	}
+	m_pControllerCommands[input] = command;
 }
-

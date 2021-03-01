@@ -14,6 +14,12 @@
 #include "TextComponent.h"
 #include "TextureComponent.h"
 #include "FPSComponent.h"
+#include "HealthComponent.h"
+#include "SubjectComponent.h"
+#include "HealthObserver.h"
+#include "Command.h"
+#include "PointComponent.h"
+#include "PointObserver.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -86,6 +92,93 @@ void dae::Minigin::LoadGame() const
 	go->AddComponent(ComponentType::FPSComponent, FPSComp);
 
 	go->GetTransform()->SetPosition(10, 10);
+
+	scene.Add(go);
+
+
+	go = std::make_shared<GameObject>("Player 1");
+
+	textureComp = std::make_shared<TextureComponent>();
+	textureComp->SetTexture("Qbert.png");
+	go->AddComponent(ComponentType::TextureComponent, textureComp);
+
+	//Components
+	auto healthComp = std::make_shared<HealthComponent>(3);
+	go->AddComponent(ComponentType::HealthComponent, healthComp);
+	
+	auto pointComp = std::make_shared<PointComponent>();
+	go->AddComponent(ComponentType::PointComponent, pointComp);
+	
+	//SubjectComponent
+	auto subjectComp = std::make_shared<SubjectComponent>();
+	go->AddComponent(ComponentType::SubjectComponent, subjectComp); 
+
+	//Observers
+	auto pointObserver = std::make_shared<PointObserver>(pointComp);
+	subjectComp->AddObserver(pointObserver);
+	
+	auto healthObserver = std::make_shared<HealthObserver>(healthComp);
+	subjectComp->AddObserver(healthObserver);
+
+	//Button input
+	std::shared_ptr<KillCommand> pKill{ new KillCommand(subjectComp) };
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_A, InputType::KeyDown }, pKill);
+
+	std::shared_ptr<ColorChangeCommand> pColorChange{ new ColorChangeCommand {subjectComp} };
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_B, InputType::KeyDown }, pColorChange);
+
+	std::shared_ptr<KillByFlyingDiscCommand> pKillByFlyingDisc{ new KillByFlyingDiscCommand {subjectComp} };
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_Y, InputType::KeyDown }, pKillByFlyingDisc);
+
+	std::shared_ptr<RemainingDiscCommand> pRemainingDisc{ new RemainingDiscCommand {subjectComp} };
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_X, InputType::KeyDown }, pRemainingDisc);
+
+	std::shared_ptr<CatchingCommand> pCatching{ new CatchingCommand {subjectComp} };
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_RSHOULDER, InputType::KeyDown }, pCatching);
+
+	scene.Add(go);
+
+	//Player 2
+
+	go = std::make_shared<GameObject>("Player 2");
+
+	textureComp = std::make_shared<TextureComponent>();
+	textureComp->SetTexture("Qbert.png");
+	go->AddComponent(ComponentType::TextureComponent, textureComp);
+
+	//Components
+	healthComp = std::make_shared<HealthComponent>(3);
+	go->AddComponent(ComponentType::HealthComponent, healthComp);
+
+	pointComp = std::make_shared<PointComponent>();
+	go->AddComponent(ComponentType::PointComponent, pointComp);
+
+	//SubjectComponent
+	subjectComp = std::make_shared<SubjectComponent>();
+	go->AddComponent(ComponentType::SubjectComponent, subjectComp);
+
+	//Observers
+	pointObserver = std::make_shared<PointObserver>(pointComp);
+	subjectComp->AddObserver(pointObserver);
+
+	healthObserver = std::make_shared<HealthObserver>(healthComp);
+	subjectComp->AddObserver(healthObserver);
+
+	//Button input
+	pKill = std::make_shared<KillCommand>(subjectComp) ;
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_DOWN, InputType::KeyDown }, pKill);
+
+	pColorChange = std::make_shared<ColorChangeCommand>(subjectComp) ;
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_RIGHT, InputType::KeyDown }, pColorChange);
+
+	pKillByFlyingDisc = std::make_shared<KillByFlyingDiscCommand> (subjectComp) ;
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_UP, InputType::KeyDown }, pKillByFlyingDisc);
+
+	pRemainingDisc = std::make_shared<RemainingDiscCommand> (subjectComp);
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_LEFT, InputType::KeyDown }, pRemainingDisc);
+
+	pCatching = std::make_shared<CatchingCommand> (subjectComp);
+	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_LSHOULDER, InputType::KeyDown }, pCatching);
 
 	scene.Add(go);
 }

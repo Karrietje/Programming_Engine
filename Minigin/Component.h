@@ -9,7 +9,6 @@
 namespace dae
 {
 	class GameObject;
-
 	class Component
 	{
 	public:
@@ -19,8 +18,15 @@ namespace dae
 		virtual void Render(glm::vec2 position) = 0;
 
 		void SetGameObject(GameObject* pGameObject);
+		inline GameObject* GetGameObject()const;
 
 	protected:
 		GameObject* m_pGameObject;
 	};
+
+	inline GameObject* dae::Component::GetGameObject() const
+	{
+		return m_pGameObject;
+	}
 }
+

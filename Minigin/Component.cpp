@@ -12,3 +12,4 @@ void Component::SetGameObject(GameObject* pGameObject)
 {
 	m_pGameObject = pGameObject;
 }
+

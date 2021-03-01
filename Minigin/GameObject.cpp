@@ -6,7 +6,8 @@
 
 using namespace dae;
 
-dae::GameObject::GameObject()
+dae::GameObject::GameObject(const std::string& name)
+	:m_Name(name)
 {
 	m_pTransform = std::make_shared<TransformComponent>();
 }
