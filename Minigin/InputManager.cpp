@@ -16,50 +16,75 @@ dae::InputManager::~InputManager()
 
 bool dae::InputManager::ProcessInput()
 {
-	//Wat in m_ControllerState zit leegmaken =>De grootte van input_State
-	ZeroMemory(&m_ControllerState, sizeof(XINPUT_KEYSTROKE));
-	XInputGetKeystroke(0, 0, &m_ControllerState);
-
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
 			return false;
 		}
-		if (e.type == SDL_KEYDOWN) {
-			
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
-		}
-	}
 
-	for (std::pair<ControllerInput, Command*> command : m_pControllerCommands)
-	{
-		if (command.first.input == m_ControllerState.VirtualKey)
+		for (std::pair<ControllerInput, Command*> command : m_pControllerCommands)
 		{
-			switch (command.first.inputType)
+			if (command.first.keyboardInput == e.key.keysym.sym)
 			{
-			case InputType::KeyDown:
-				if (m_ControllerState.Flags & XINPUT_KEYSTROKE_KEYDOWN)
-					command.second->Execute();
-				break;
-			case InputType::KeyHold:
-				if (m_ControllerState.Flags & XINPUT_KEYSTROKE_REPEAT)
-					command.second->Execute();
-				break;
-			case InputType::KeyUp:
-				if (m_ControllerState.Flags & XINPUT_KEYSTROKE_KEYUP)
-					command.second->Execute();
-				break;
-			default:
-				break;
+				switch (command.first.inputType)
+				{
+				case InputType::KeyDown:
+					if (e.type == SDL_KEYDOWN)
+						command.second->Execute();
+					break;
+				case InputType::KeyHold:
+					if (e.type == SDL_KEYDOWN)
+						command.second->Execute();
+					break;
+				case InputType::KeyUp:
+					if (e.type == SDL_KEYUP)
+						command.second->Execute();
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}
+
+	//Wat in m_ControllerState zit leegmaken =>De grootte van input_State
+	ZeroMemory(&m_ControllerState, sizeof(XINPUT_KEYSTROKE));
+
+	for (int i{}; i < XUSER_MAX_COUNT; i++)
+	{
+		while (XInputGetKeystroke(i, 0, &m_ControllerState) == ERROR_SUCCESS)
+		{
+			for (std::pair<ControllerInput, Command*> command : m_pControllerCommands)
+			{
+				if ((command.first.player == i) && (command.first.controllerInput == m_ControllerState.VirtualKey))
+				{
+					switch (command.first.inputType)
+					{
+					case InputType::KeyDown:
+						if (m_ControllerState.Flags & XINPUT_KEYSTROKE_KEYDOWN)
+							command.second->Execute();
+						break;
+					case InputType::KeyHold:
+						if (m_ControllerState.Flags & XINPUT_KEYSTROKE_REPEAT)
+							command.second->Execute();
+						break;
+					case InputType::KeyUp:
+						if (m_ControllerState.Flags & XINPUT_KEYSTROKE_KEYUP)
+							command.second->Execute();
+						break;
+					default:
+						break;
+					}
+				}
+			}
+			ZeroMemory(&m_ControllerState, sizeof(XINPUT_KEYSTROKE));
+		}
+	}
+
 	return true;
 }
 
 void dae::InputManager::AddCommand(ControllerInput input, Command* command)
 {
-	m_pControllerCommands[input] = command;
+	m_pControllerCommands.insert(std::make_pair(input, command));
 }

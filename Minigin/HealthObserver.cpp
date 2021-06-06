@@ -4,8 +4,9 @@
 #include "SubjectComponent.h"
 #include "GameObject.h"
 
-dae::HealthObserver::HealthObserver(HealthComponent* health)
+dae::HealthObserver::HealthObserver(HealthComponent* health, const std::vector<GameObject*>& pHearts)
 	:m_pHealth{health}
+	, m_pHearts{pHearts}
 {
 }
 
@@ -21,10 +22,13 @@ void dae::HealthObserver::Notify(Event event)
 			if (m_pHealth->GetHealth() != 0)
 			{
 				std::cout << m_pSubject->GetGameObject()->GetName() << " loses HP!\n Remaining HP: " << m_pHealth->GetHealth() << '\n';
+				m_pHearts[m_pHealth->GetHealth()]->SetActive(false);
 			}
 			else
 			{
 				std::cout << m_pSubject->GetGameObject()->GetName() << " died!\n";
+				m_pSubject->GetGameObject()->SetActive(false);
+				m_pHearts[m_pHealth->GetHealth()]->SetActive(false);
 			}
 		}
 		break;

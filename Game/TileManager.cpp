@@ -1,11 +1,11 @@
 #include "TileManager.h"
 #include "ResourceManager.h"
-#include "TileComponent.h"
 #include <fstream>
 #include <iostream>
 #include "GameObject.h"
 #include "Scene.h"
-#include "GameManagerComponent.h"
+#include "GameComponents.h"
+#include "Components.h"
 
 void dae::TileManager::CreateLevels(const std::string& file, Scene* pScene, int levels)
 {
@@ -52,8 +52,36 @@ void dae::TileManager::CreateLevels(const std::string& file, Scene* pScene, int 
 				if (level != 0)
 					pGameObject->SetActive(false);
 			}
-			startY += (size * 3.f / 4.f);
 			startX -= (size / 2.f);
+
+			if (row == ((nrRows / 2) + 1))
+			{
+				GameObject* pGameObject = new GameObject();
+				pScene->Add(pGameObject, 0);
+				SpinningDisksComponent* pSpinningDiskComponent = new SpinningDisksComponent(m_pTiles[level][0][0]);
+				pGameObject->AddComponent(ComponentType::SpinningDisksComponent, pSpinningDiskComponent);
+				pSpinningDiskComponent->Initialize();
+				m_pTiles[level][row][0]->SetSpinningDisk(pSpinningDiskComponent);
+				pGameObject->GetTransform()->SetPosition(startX + (size / 4), startY - (size / 2));
+
+				if (level != 0)
+					pGameObject->SetActive(false);
+				m_pSpinningDisks[level].push_back(pSpinningDiskComponent);
+
+				pGameObject = new GameObject();
+				pScene->Add(pGameObject, 0);
+				pSpinningDiskComponent = new SpinningDisksComponent(m_pTiles[level][0][0]);
+				pGameObject->AddComponent(ComponentType::SpinningDisksComponent, pSpinningDiskComponent);
+				pSpinningDiskComponent->Initialize();
+				m_pTiles[level][row][row]->SetSpinningDisk(pSpinningDiskComponent);
+				pGameObject->GetTransform()->SetPosition(startX + ((row + 1) * size) + (size / 4), startY - (size / 2));
+
+				if (level != 0)
+					pGameObject->SetActive(false);
+				m_pSpinningDisks[level].push_back(pSpinningDiskComponent);
+			}
+
+			startY += (size * 3.f / 4.f);
 		}
 
 		for (size_t row{}; row < m_pTiles[level].size(); row++)
@@ -65,6 +93,7 @@ void dae::TileManager::CreateLevels(const std::string& file, Scene* pScene, int 
 					if (tileIdx != 0)
 					{
 						m_pTiles[level][row][tileIdx]->SetTopLeftTile(m_pTiles[level][row - 1][tileIdx - 1]);
+						m_pTiles[level][row][tileIdx]->SetLeftTile(m_pTiles[level][row][tileIdx - 1]);
 					}
 					else
 					{
@@ -74,6 +103,7 @@ void dae::TileManager::CreateLevels(const std::string& file, Scene* pScene, int 
 					if (tileIdx != (m_pTiles[level][row].size() - 1))
 					{
 						m_pTiles[level][row][tileIdx]->SetTopRightTile(m_pTiles[level][row - 1][tileIdx]);
+						m_pTiles[level][row][tileIdx]->SetRightTile(m_pTiles[level][row][tileIdx + 1]);
 					}
 					else
 					{
@@ -109,6 +139,11 @@ void dae::TileManager::CreateLevels(const std::string& file, Scene* pScene, int 
 const std::vector<std::vector<dae::TileComponent*>>& dae::TileManager::GetTiles(int level) const
 {
 	return m_pTiles.at(level);
+}
+
+const std::vector<dae::SpinningDisksComponent*>& dae::TileManager::GetSpinningDisks(int level) const
+{
+	return m_pSpinningDisks.at(level);
 }
 
 void dae::TileManager::SetTile(bool right)

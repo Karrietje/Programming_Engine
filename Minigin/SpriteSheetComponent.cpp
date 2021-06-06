@@ -65,11 +65,12 @@ void dae::SpriteSheetComponent::SetSprite(const std::string& texturePath, const 
 	m_pSourceRect->h = m_SpriteInfo.height / m_SpriteInfo.rows; 
 }
 
-void dae::SpriteSheetComponent::SetSpriteState(SpriteState state)
+void dae::SpriteSheetComponent::SetSpriteState(SpriteState state, bool resetRows)
 {
 	m_CurrentSpriteState = state; 
 	m_CurrentRow = m_SpriteInfo.SheetInfo[m_CurrentSpriteState].first;
-	m_CurrentColumn = 0;
+	if (resetRows)
+		m_CurrentColumn = 0;
 	m_pSourceRect->x = 0; 
 	m_pSourceRect->y = m_CurrentRow * m_pSourceRect->h; 
 }

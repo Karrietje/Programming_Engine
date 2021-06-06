@@ -39,7 +39,7 @@ namespace dae
 		virtual void Render(glm::vec2 position) override;
 
 		void SetSprite(const std::string& texturePath, const SpriteInfo& spriteInfo );
-		void SetSpriteState(SpriteState state);
+		void SetSpriteState(SpriteState state, bool resetRows = true);
 		void SetFrameTime(float frameTime); 
 		void SetScale(float scale); 
 

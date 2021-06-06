@@ -4,13 +4,15 @@
 #include "Scene.h"
 #include "GameCommands.h"
 #include "InputManager.h"
-#include "TileComponent.h"
+#include "GameComponents.h"
 #include "Observers.h"
-#include "AiComponent.h"
 #include "ResourceManager.h"
+#include <SDL.h>
+#include <string>
 
 dae::QBertComponent::QBertComponent()
-	:m_JumpTime{0.f}
+	: m_CanMove{true}
+	, m_JumpTime{1.f}
 	, m_Timer{0.f}
 {
 	
@@ -18,12 +20,13 @@ dae::QBertComponent::QBertComponent()
 
 void dae::QBertComponent::Move(MoveDirections moveDirection)
 {
-	if (m_Timer < m_JumpTime)
+	if ((m_Timer < m_JumpTime) || !m_CanMove)
 	{
 		return; 
 	}
 
 	TileComponent* pNewTile{};
+	SpinningDisksComponent* pSpinningDisk{};
 	switch (moveDirection)
 	{
 	case dae::QBertComponent::MoveDirections::TopRight:
@@ -35,6 +38,16 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 			m_pGameObject->GetTransform()->SetPosition(newTilePos);
 			m_pCurrentTile->JumpOn(m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent));
 			m_pGameObject->GetComponent<SpriteSheetComponent>(ComponentType::SpriteSheetComponent)->SetSpriteState(SpriteSheetComponent::SpriteState::TopRight);
+			break;
+		}
+		pSpinningDisk = m_pCurrentTile->GetSpinningDisk();
+		if (pSpinningDisk && pSpinningDisk->GetGameObject()->IsActive())
+		{
+			glm::vec2 newPos{ pSpinningDisk->GetPosition() };
+			m_pGameObject->GetTransform()->SetPosition(newPos);
+			pSpinningDisk->JumpOn(this);
+			m_pGameObject->GetComponent<SpriteSheetComponent>(ComponentType::SpriteSheetComponent)->SetSpriteState(SpriteSheetComponent::SpriteState::TopRight);
+			m_CanMove = false;
 		}
 		break;
 	case dae::QBertComponent::MoveDirections::BottomRight:
@@ -68,6 +81,16 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 			m_pGameObject->GetTransform()->SetPosition(newTilePos);
 			m_pCurrentTile->JumpOn(m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent));
 			m_pGameObject->GetComponent<SpriteSheetComponent>(ComponentType::SpriteSheetComponent)->SetSpriteState(SpriteSheetComponent::SpriteState::TopLeft);
+			break;
+		}
+		pSpinningDisk = m_pCurrentTile->GetSpinningDisk();
+		if (pSpinningDisk && pSpinningDisk->GetGameObject()->IsActive())
+		{
+			glm::vec2 newPos{ pSpinningDisk->GetPosition() };
+			m_pGameObject->GetTransform()->SetPosition(newPos);
+			pSpinningDisk->JumpOn(this);
+			m_pGameObject->GetComponent<SpriteSheetComponent>(ComponentType::SpriteSheetComponent)->SetSpriteState(SpriteSheetComponent::SpriteState::TopLeft);
+			m_CanMove = false;
 		}
 		break;
 	}
@@ -79,10 +102,22 @@ void dae::QBertComponent::Reset(TileComponent* pStartTile)
 {
 	m_pGameObject->GetTransform()->SetPosition(pStartTile->GetPosition());
 	m_pCurrentTile = pStartTile; 
+	m_CanMove = true;
 }
 
-void dae::QBertComponent::Initialize(TileComponent* pStartTile, Scene* pScene)
+void dae::QBertComponent::KilledCoily()
 {
+	m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::KillByFlyingDisc);
+}
+
+void dae::QBertComponent::SetCurrentTile(TileComponent* pTile)
+{
+	m_pCurrentTile = pTile;
+}
+
+void dae::QBertComponent::Initialize(TileComponent* pStartTile, Scene* pScene, int player, GameManagerComponent* pGameManagerComponent)
+{
+	m_pGameManagerComponent = pGameManagerComponent;
 	m_pCurrentTile = pStartTile;
 
 	auto spriteComponent = new SpriteSheetComponent();
@@ -96,58 +131,27 @@ void dae::QBertComponent::Initialize(TileComponent* pStartTile, Scene* pScene)
 	spriteInfo.SheetInfo[SpriteSheetComponent::SpriteState::BottomRight] = std::make_pair(2, 2);
 	spriteInfo.SheetInfo[SpriteSheetComponent::SpriteState::BottomLeft] = std::make_pair(3, 2);
 
-	spriteComponent->SetSprite("Qbert.png", spriteInfo);
+	std::string spriteName{ "Qbert" + std::to_string(player) + ".png" };
+	spriteComponent->SetSprite(spriteName, spriteInfo);
 	spriteComponent->SetSpriteState(SpriteSheetComponent::SpriteState::BottomRight);
 	spriteComponent->SetScale(2.f);
 
 	m_pGameObject->AddComponent(ComponentType::SpriteSheetComponent, spriteComponent);
 
-	//TextComponent
-	GameObject* pGameObject = new GameObject();
-	auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 24);
-	auto textComp = new TextComponent();
-	textComp->SetFont(font);
-	textComp->SetText("Points: ");
-	pGameObject->AddComponent(ComponentType::TextComponent, textComp);
-	pScene->Add(pGameObject, 1);
-	pGameObject->GetTransform()->SetPosition(0.f, 64.f);
-
-	pGameObject = new GameObject(); 
-	font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 24);
-	textComp = new TextComponent();
-	textComp->SetFont(font);
-	textComp->SetText("0");
-	pGameObject->AddComponent(ComponentType::TextComponent, textComp);
-	pScene->Add(pGameObject, 1);
-	pGameObject->GetTransform()->SetPosition(80.f, 64.f);
-
-	auto pointComp = new PointComponent();
-	m_pGameObject->AddComponent(ComponentType::PointComponent, pointComp);
-
-	//SubjectComponent
-	auto subjectComp = new SubjectComponent();
-	m_pGameObject->AddComponent(ComponentType::SubjectComponent, subjectComp);
-
-	//Observers
-	auto pointObserver = new PointObserver(pointComp, textComp);
-	subjectComp->AddObserver(pointObserver);
-
 	glm::vec2 tilePos{ pStartTile->GetPosition() };
 	m_pGameObject->GetTransform()->SetPosition(tilePos);
 
-
-
 	MoveUpRightCommand* pMoveUpRight{ new MoveUpRightCommand(this) };
-	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_UP, InputType::KeyDown }, pMoveUpRight);
+	InputManager::GetInstance().AddCommand(ControllerInput{ (player == 0 ? SDLK_w : SDLK_UP), VK_PAD_DPAD_UP, InputType::KeyDown, player }, pMoveUpRight);
 
 	MoveDownRightCommand* pMoveDownRight{ new MoveDownRightCommand(this) };
-	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_RIGHT, InputType::KeyDown }, pMoveDownRight);
+	InputManager::GetInstance().AddCommand(ControllerInput{ (player == 0 ? SDLK_d : SDLK_RIGHT), VK_PAD_DPAD_RIGHT, InputType::KeyDown, player }, pMoveDownRight);
 
 	MoveDownLeftCommand* pMoveDownLeft{ new MoveDownLeftCommand(this) };
-	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_DOWN, InputType::KeyDown }, pMoveDownLeft);
+	InputManager::GetInstance().AddCommand(ControllerInput{ (player == 0 ? SDLK_s : SDLK_DOWN),  VK_PAD_DPAD_DOWN, InputType::KeyDown, player }, pMoveDownLeft);
 
 	MoveUpLeftCommand* pMoveUpLeft{ new MoveUpLeftCommand(this) };
-	InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_LEFT, InputType::KeyDown }, pMoveUpLeft);
+	InputManager::GetInstance().AddCommand(ControllerInput{ (player == 0 ? SDLK_a : SDLK_LEFT), VK_PAD_DPAD_LEFT, InputType::KeyDown, player }, pMoveUpLeft);
 
 	for (int i = 0; i < m_MaxHearts; i++)
 	{
@@ -155,31 +159,59 @@ void dae::QBertComponent::Initialize(TileComponent* pStartTile, Scene* pScene)
 		TextureComponent* pTexture = new TextureComponent();
 		pTexture->SetTexture("Heart.png");
 		pObject->AddComponent(ComponentType::TextureComponent, pTexture);
-		pObject->GetTransform()->SetPosition(i * 32.f, 32.f);
+		if (player == 0)
+		{
+			pObject->GetTransform()->SetPosition(10 + (i * 32.f), 32.f);
+		}
+		else if (player == 1)
+		{
+			pObject->GetTransform()->SetPosition(600 - (i * 32.f), 32.f);
+		}
 		pScene->Add(pObject, 1);
 		m_pHearts.push_back(pObject);
 	}
+
+	auto healthComp = new HealthComponent(m_MaxHearts);
+	m_pGameObject->AddComponent(ComponentType::HealthComponent, healthComp);
+
+	//SubjectComponent
+	auto subjectComp = new SubjectComponent();
+	m_pGameObject->AddComponent(ComponentType::SubjectComponent, subjectComp);
+
+	//Observers
+	auto healthObserver = new HealthObserver(healthComp, m_pHearts);
+	subjectComp->AddObserver(healthObserver);
 }
 
 void dae::QBertComponent::Update(float elapsedSec)
 {
 	m_Timer += elapsedSec;
-	GameObject* pEnemy{ m_pCurrentTile->GetEnemy() };
+	GameObject* pEnemy{ m_pCurrentTile->GetSlickSam() };
 	if (pEnemy && pEnemy->IsActive())
 	{
-		switch (pEnemy->GetComponent<AiComponent>(ComponentType::AiComponent)->GetType())
-		{
-		case AiComponent::Type::SlickSam:
-			m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::CatchingSlickSam);
-			pEnemy->SetActive(false); 
-			break; 
-		default:
-			break;
-		}
+		m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::CatchingSlickSam);
+		pEnemy->SetActive(false);
+	}
+	pEnemy = m_pCurrentTile->GetUggWrongway();
+	if (pEnemy && pEnemy->IsActive())
+	{
+		m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::Kill);
+		m_pGameManagerComponent->SoftReset();
+	}
+	pEnemy = m_pCurrentTile->GetCoily();
+	if (pEnemy && pEnemy->IsActive())
+	{
+		m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::Kill);
+		m_pGameManagerComponent->SoftReset();
 	}
 }
 
 void dae::QBertComponent::Render(glm::vec2 position)
 {
 	UNREFERENCED_PARAMETER(position); 
+}
+
+int dae::QBertComponent::GetLives() const
+{
+	return m_pGameObject->GetComponent<HealthComponent>(ComponentType::HealthComponent)->GetHealth();
 }

@@ -18,12 +18,14 @@ namespace dae
 	struct ControllerInput
 	{
 		//Which key 
-		int input;
+		int keyboardInput;
+		int controllerInput;
 		InputType inputType;
+		int player = 0;
 
 		bool operator<(const ControllerInput& other) const
 		{
-			return input < other.input;
+			return controllerInput < other.controllerInput;
 		}
 	};
 
@@ -36,7 +38,7 @@ namespace dae
 
 	private:
 		XINPUT_KEYSTROKE m_ControllerState;
-		std::map<ControllerInput, Command*> m_pControllerCommands;
+		std::multimap<ControllerInput, Command*> m_pControllerCommands;
 	};
 }
 

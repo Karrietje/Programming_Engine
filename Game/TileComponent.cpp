@@ -126,6 +126,26 @@ void dae::TileComponent::SetTopLeftTile(TileComponent* pTile)
 
 }
 
+void dae::TileComponent::SetLeftTile(TileComponent* pTile)
+{
+	m_Neighbours.Left = pTile;
+}
+
+void dae::TileComponent::SetRightTile(TileComponent* pTile)
+{
+	m_Neighbours.Right = pTile;
+}
+
+SpinningDisksComponent* dae::TileComponent::GetSpinningDisk() const
+{
+	return m_pSpinningDisk;
+}
+
+void dae::TileComponent::SetSpinningDisk(SpinningDisksComponent* pSpinningDisk)
+{
+	m_pSpinningDisk = pSpinningDisk;
+}
+
 void dae::TileComponent::JumpOn(SubjectComponent* pSubjectComponent)
 {
 	int tempColor = (m_CurrentColor + 1) % m_pColors.size();
@@ -171,14 +191,45 @@ glm::vec2 dae::TileComponent::GetPosition() const
 	return position;
 }
 
-GameObject* dae::TileComponent::GetEnemy() const
+glm::vec2 dae::TileComponent::GetSidePosition(bool left) const
 {
-	return m_pEnemy; 
+	glm::vec2 position{ m_pGameObject->GetTransform()->GetPosition() };
+	if (!left)
+	{
+		position.x += 40;
+	}
+	position.y += 30;
+	return position;
 }
 
-void dae::TileComponent::SetEnemy(GameObject* pEnemy)
+GameObject* dae::TileComponent::GetSlickSam() const
 {
-	m_pEnemy = pEnemy; 
+	return m_pSlickSam; 
+}
+
+GameObject* dae::TileComponent::GetUggWrongway() const
+{
+	return m_pUggWrongway;
+}
+
+GameObject* dae::TileComponent::GetCoily() const
+{
+	return m_pCoily;
+}
+
+void dae::TileComponent::SetSlickSam(GameObject* pEnemy)
+{
+	m_pSlickSam = pEnemy; 
+}
+
+void dae::TileComponent::SetUggWrongway(GameObject* pEnemy)
+{
+	m_pUggWrongway = pEnemy;
+}
+
+void dae::TileComponent::SetCoily(GameObject* pCoily)
+{
+	m_pCoily = pCoily;
 }
 
 void dae::TileComponent::Update(float elapsedSec)

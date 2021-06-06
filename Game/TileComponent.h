@@ -6,6 +6,7 @@ namespace dae
 	class Scene;
 	class TileManager;
 	class SubjectComponent; 
+	class SpinningDisksComponent;
 	class TileComponent final : public Component
 	{
 
@@ -16,6 +17,8 @@ namespace dae
 			TileComponent* BottomRight;
 			TileComponent* BottomLeft;
 			TileComponent* TopLeft;
+			TileComponent* Left;
+			TileComponent* Right;
 		};
 
 		TileComponent();
@@ -25,14 +28,24 @@ namespace dae
 		void SetBottomRightTile(TileComponent* pTile);
 		void SetBottomLeftTile(TileComponent* pTile);
 		void SetTopLeftTile(TileComponent* pTile);
+		void SetLeftTile(TileComponent* pTile);
+		void SetRightTile(TileComponent* pTile);
+
+		SpinningDisksComponent* GetSpinningDisk() const;
+		void SetSpinningDisk(SpinningDisksComponent* pSpinningDisk);
 
 		void JumpOn(SubjectComponent* pSubjectComponent);
 		void Revert(); 
 
 		Neighbours GetNeighbours() const;
 		glm::vec2 GetPosition() const;
-		GameObject* GetEnemy() const; 
-		void SetEnemy(GameObject* pEnemy);
+		glm::vec2 GetSidePosition(bool left) const;
+		GameObject* GetSlickSam() const;
+		GameObject* GetUggWrongway() const;
+		GameObject* GetCoily() const;
+		void SetSlickSam(GameObject* pEnemy);
+		void SetUggWrongway(GameObject* pEnemy);
+		void SetCoily(GameObject* pCoily);
 
 		virtual void Update(float elapsedSec) override;
 		virtual void Render(glm::vec2 position) override;
@@ -47,8 +60,11 @@ namespace dae
 
 		int m_CurrentColor;
 		std::vector<GameObject*> m_pColors;
-		GameObject* m_pEnemy; 
+		GameObject* m_pSlickSam; 
+		GameObject* m_pUggWrongway;
+		GameObject* m_pCoily;
 
+		SpinningDisksComponent* m_pSpinningDisk;
 	};
 }
 

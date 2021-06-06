@@ -4,6 +4,7 @@
 namespace dae
 {
 	class TileComponent;
+	class CoilyComponent;
 	class AiComponent final : public Component
 	{
 	public:
@@ -13,7 +14,7 @@ namespace dae
 			Coily,
 			UggWrongway
 		};
-		AiComponent(TileComponent* pStartTile, Type type);
+		AiComponent(TileComponent* pStartTile, Type type, bool left = false);
 		/*~AiComponent(); */
 		void Initialize(); 
 		Type GetType() const; 
@@ -22,12 +23,22 @@ namespace dae
 		void Reset(TileComponent* pTile); 
 
 	private:
+		bool m_IsLeftOnTile;
+		bool m_Previous;
 
 		TileComponent* m_pCurrentTile;
+		CoilyComponent* m_pCoilyComponent;
 		Type m_Type; 
 
 		const float m_MoveTime; 
 		float m_Timer;
+
+		void SlickSamUpdate();
+		void CoilyUpdate();
+		void UggWrongwayUpdate();
+
+		friend class CoilyComponent;
+		void SetCoilyComponent(CoilyComponent* pCoilyComponent);
 	};
 }
 

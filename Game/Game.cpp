@@ -5,10 +5,12 @@
 
 #include <Minigin.h>
 #include "SceneManager.h"
-#include <vld.h>
 #include "GameManagerComponent.h"
+#include "BeginScreenComponent.h"
+#include "TextureComponent.h"
 #include "GameObject.h"
 #include "Scene.h"
+#include <vld.h>
 
 using namespace dae;
 
@@ -28,13 +30,22 @@ int main(int, char* [])
 
 void Initialize()
 {
-	auto& scene = SceneManager::GetInstance().CreateScene("Game");
-	SceneManager::GetInstance().SetCurrentScene("Game");
-	
-	GameObject* pGameObject = new GameObject(); 
-	GameManagerComponent* pGameManager = new GameManagerComponent(&scene); 
-	
-	pGameObject->AddComponent(ComponentType::GameManagerComponent, pGameManager); 
-	scene.Add(pGameObject, 0); 
+	auto& beginScene = SceneManager::GetInstance().CreateScene("BeginScene");
 
+	GameObject* pGameObject = new GameObject();
+	BeginScreenComponent* pBeginScreenComponent = new BeginScreenComponent();
+	pGameObject->AddComponent(ComponentType::BeginScreenComponent, pBeginScreenComponent);
+
+	beginScene.Add(pGameObject, 0);
+
+	auto& endScene = SceneManager::GetInstance().CreateScene("EndScene");
+
+	pGameObject = new GameObject();
+	TextureComponent* pTextureComponent = new TextureComponent();
+	pTextureComponent->SetTexture("background.jpg");
+	pGameObject->AddComponent(ComponentType::TextureComponent, pTextureComponent);
+
+	endScene.Add(pGameObject, 0);
+
+	SceneManager::GetInstance().SetCurrentScene("BeginScene");
 }
