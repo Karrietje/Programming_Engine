@@ -4,6 +4,16 @@
 #include "Command.h"
 
 
+dae::InputManager::~InputManager()
+{
+	for (std::pair<ControllerInput, Command*> command : m_pControllerCommands)
+	{
+		delete command.second;
+		command.second = nullptr;
+	}
+	m_pControllerCommands.clear();
+}
+
 bool dae::InputManager::ProcessInput()
 {
 	//Wat in m_ControllerState zit leegmaken =>De grootte van input_State
@@ -23,7 +33,7 @@ bool dae::InputManager::ProcessInput()
 		}
 	}
 
-	for (std::pair<ControllerInput, std::shared_ptr<Command>> command : m_pControllerCommands)
+	for (std::pair<ControllerInput, Command*> command : m_pControllerCommands)
 	{
 		if (command.first.input == m_ControllerState.VirtualKey)
 		{
@@ -49,7 +59,7 @@ bool dae::InputManager::ProcessInput()
 	return true;
 }
 
-void dae::InputManager::AddCommand(ControllerInput input, const std::shared_ptr<Command>& command)
+void dae::InputManager::AddCommand(ControllerInput input, Command* command)
 {
 	m_pControllerCommands[input] = command;
 }

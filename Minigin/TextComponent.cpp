@@ -18,6 +18,15 @@ dae::TextComponent::TextComponent()
 {
 }
 
+dae::TextComponent::~TextComponent()
+{
+	delete m_pFont;
+	m_pFont = nullptr;
+
+	delete m_pTexture;
+	m_pTexture = nullptr;
+}
+
 void TextComponent::Update(float elapsedSec)
 {
 	UNREFERENCED_PARAMETER(elapsedSec);
@@ -35,7 +44,8 @@ void TextComponent::Update(float elapsedSec)
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
 		}
 		SDL_FreeSurface(surf);
-		m_pTexture = std::make_shared<Texture2D>(texture);
+		delete m_pTexture;
+		m_pTexture = new Texture2D(texture);
 		m_NeedsUpdate = false;
 	}
 }
@@ -54,7 +64,7 @@ void TextComponent::SetText(const std::string& text)
 	m_NeedsUpdate = true;
 }
 
-void TextComponent::SetFont(std::shared_ptr<Font> pFont)
+void TextComponent::SetFont(Font* pFont)
 {
 	m_pFont = pFont;
 }

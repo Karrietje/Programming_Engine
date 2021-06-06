@@ -2,7 +2,6 @@
 #include "Component.h"
 #include "Utils.h"
 #include <vector>
-#include <memory>
 
 namespace dae
 {
@@ -11,15 +10,21 @@ namespace dae
 	{
 	public:
 		SubjectComponent(); 
-
-		void AddObserver(std::shared_ptr<Observer> pObserver);
+		virtual ~SubjectComponent() override;
+		
+		SubjectComponent(const SubjectComponent& other) = delete;
+		SubjectComponent(SubjectComponent&& other) = delete;
+		SubjectComponent& operator=(const SubjectComponent& other) = delete;
+		SubjectComponent& operator=(SubjectComponent&& other) = delete;
+		
+		void AddObserver(Observer* pObserver);
 		void Notify(Event event); 
 
 		// Inherited via Component
 		virtual void Update(float elapsedSec) override;
 		virtual void Render(glm::vec2 position) override;
 	private:
-		std::vector<std::shared_ptr<Observer>> m_pObservers; 
+		std::vector<Observer*> m_pObservers; 
 
 	};
 

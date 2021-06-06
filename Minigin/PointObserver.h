@@ -3,16 +3,17 @@
 
 namespace dae
 {
+	class TextComponent;
 	class PointComponent;
 	class PointObserver final : public Observer
 	{
 	public:
-		PointObserver(std::weak_ptr<PointComponent> point);
+		PointObserver(PointComponent* point, TextComponent* pTextComponent);
 
 		virtual void Notify(Event event) override;
 
-
 	private:
-		std::weak_ptr<PointComponent> m_pPoints;
+		PointComponent* m_pPoints;
+		TextComponent* m_pPointsText;
 	};
 }

@@ -30,12 +30,13 @@ namespace dae
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
+		~InputManager();
 		bool ProcessInput();
-		void AddCommand(ControllerInput input, const std::shared_ptr<Command>& command);
+		void AddCommand(ControllerInput input, Command* command);
 
 	private:
 		XINPUT_KEYSTROKE m_ControllerState;
-		std::map<ControllerInput, std::shared_ptr<Command>> m_pControllerCommands;
+		std::map<ControllerInput, Command*> m_pControllerCommands;
 	};
 }
 

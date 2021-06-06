@@ -1,5 +1,6 @@
 #pragma once
 #include "Singleton.h"
+#include <map>
 
 namespace dae
 {
@@ -7,13 +8,21 @@ namespace dae
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
+		~SceneManager();
+
 		Scene& CreateScene(const std::string& name);
+
+		void SetCurrentScene(const std::string& name);
 
 		void Update(float elapsedSec);
 		void Render();
+		void LateUpdate();
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
-		std::vector<std::shared_ptr<Scene>> m_Scenes;
+
+		std::string m_CurrentScene;
+
+		std::map<std::string, Scene*> m_Scenes;
 	};
 }

@@ -7,7 +7,16 @@ dae::SubjectComponent::SubjectComponent()
 {
 }
 
-void dae::SubjectComponent::AddObserver(std::shared_ptr<Observer> pObserver)
+dae::SubjectComponent::~SubjectComponent()
+{
+	for (size_t i{}; i < m_pObservers.size(); i++)
+	{
+		delete m_pObservers[i];
+		m_pObservers[i] = nullptr;
+	}
+}
+
+void dae::SubjectComponent::AddObserver(Observer* pObserver)
 {
 	m_pObservers.push_back(pObserver); 
 	pObserver->SetSubjectComponent(this); 
@@ -15,7 +24,7 @@ void dae::SubjectComponent::AddObserver(std::shared_ptr<Observer> pObserver)
 
 void dae::SubjectComponent::Notify(Event event)
 {
-	for (std::shared_ptr<Observer> pObserver : m_pObservers)
+	for (Observer* pObserver : m_pObservers)
 	{
 		pObserver->Notify(event); 
 	}

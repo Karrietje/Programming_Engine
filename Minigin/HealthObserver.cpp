@@ -4,7 +4,7 @@
 #include "SubjectComponent.h"
 #include "GameObject.h"
 
-dae::HealthObserver::HealthObserver(std::weak_ptr<HealthComponent> health)
+dae::HealthObserver::HealthObserver(HealthComponent* health)
 	:m_pHealth{health}
 {
 }
@@ -14,13 +14,13 @@ void dae::HealthObserver::Notify(Event event)
 	switch (event)
 	{
 	case Event::Kill:
-		if (!m_pHealth.expired())
+		if (m_pHealth)
 		{
 			//lock = temporary change to real pointer
-			m_pHealth.lock()->LoseHealth();
-			if (m_pHealth.lock()->GetHealth() != 0)
+			m_pHealth->LoseHealth();
+			if (m_pHealth->GetHealth() != 0)
 			{
-				std::cout << m_pSubject->GetGameObject()->GetName() << " loses HP!\n Remaining HP: " << m_pHealth.lock()->GetHealth() << '\n';
+				std::cout << m_pSubject->GetGameObject()->GetName() << " loses HP!\n Remaining HP: " << m_pHealth->GetHealth() << '\n';
 			}
 			else
 			{

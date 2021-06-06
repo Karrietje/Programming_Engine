@@ -7,6 +7,7 @@ namespace dae
 	{
 	public:
 		HealthComponent(int health); 
+		
 		inline int GetHealth() const; 
 
 		// Inherited via Component

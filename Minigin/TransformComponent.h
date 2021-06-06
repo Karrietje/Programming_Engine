@@ -12,7 +12,9 @@ namespace dae
 		virtual void Render(glm::vec2 position) override;
 
 		inline const glm::vec2& GetPosition() const { return m_Position; }
+		glm::vec2 GetWorldPosition() const;
 		void SetPosition(float x, float y);
+		void SetPosition(glm::vec2 pos);
 	private:
 		glm::vec2 m_Position;
 	};

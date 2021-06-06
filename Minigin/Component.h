@@ -2,7 +2,7 @@
 #include "Utils.h"
 #pragma warning(push)
 #pragma warning (disable:4201)
-#include <glm/vec2.hpp>
+#include ".\glm\vec2.hpp"
 #pragma warning(pop)
 #include <unordered_map>
 
@@ -13,6 +13,12 @@ namespace dae
 	{
 	public:
 		Component();
+		virtual ~Component() = default;
+
+		Component(const Component& other) = delete;
+		Component(Component&& other) = delete;
+		Component& operator=(const Component& other) = delete;
+		Component& operator=(Component&& other) = delete;
 
 		virtual void Update(float elapsedSec) = 0;
 		virtual void Render(glm::vec2 position) = 0;

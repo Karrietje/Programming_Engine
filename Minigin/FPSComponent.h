@@ -9,18 +9,24 @@ namespace dae
     {
     public:
         FPSComponent();
+        virtual ~FPSComponent() override;
+
+        FPSComponent(const FPSComponent& other) = delete;
+        FPSComponent(FPSComponent&& other) = delete;
+        FPSComponent& operator=(const FPSComponent& other) = delete;
+        FPSComponent& operator=(FPSComponent&& other) = delete;
 
         virtual void Update(float elapsedSec) override;
         virtual void Render(glm::vec2 position) override;
 
 
-        void SetFont(std::shared_ptr<Font> pFont);
+        void SetFont(Font* pFont);
 
     private:
         int m_Frames;
         int m_FPS;
         float m_Elapsed;
-        std::shared_ptr<Font> m_pFont;
-        std::shared_ptr<TextComponent> m_pText;
+        Font* m_pFont;
+        TextComponent* m_pText;
     };
 }

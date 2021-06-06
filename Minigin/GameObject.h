@@ -1,46 +1,99 @@
 #pragma once
-#include "SceneObject.h"
 #include "Utils.h"
 #include <unordered_map>
-
+#include <vector>
 
 namespace dae
 {
 	class Component;
 	class TransformComponent;
 	class Texture2D;
-	class GameObject : public SceneObject
+	class GameObject 
 	{
 	public:
-		void Update(float elapsedSec) override;
-		void Render() const override;
 
-		void AddComponent(ComponentType type, std::shared_ptr<Component> pComponent);
-
-		inline std::shared_ptr<TransformComponent> GetTransform() const;
-
-		GameObject(const std::string& name = "");
-		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
+		void Update(float elapsedSec);
+		void Render() const;
+
+		void AddComponent(ComponentType type, Component* pComponent);
+		void AddChild(GameObject* pChild);
+
+		inline GameObject* GetParent() const;
+
+		inline TransformComponent* GetTransform() const;
+		
+		template <typename T> 
+		T* GetComponent(ComponentType type) const; 
+
+		GameObject(const std::string& name = "");
+		virtual ~GameObject();
+
+		inline bool IsActive() const;
+		inline void SetActive(bool active);
+
 		inline std::string GetName() const; 
+
+		inline void SetDestroy();
+		inline bool GetDestroyed() const; 
 	private:
-		std::shared_ptr<TransformComponent> m_pTransform;
-		std::unordered_multimap<ComponentType, std::shared_ptr<Component>> m_pComponents;
+		bool m_IsActive;
+		bool m_NeedsDestroy;
+		GameObject* m_pParent;
+		std::vector<GameObject*> m_pChildren;
+
+		TransformComponent* m_pTransform;
+		std::unordered_multimap<ComponentType, Component*> m_pComponents;
 
 		std::string m_Name; 
+
+		void AddParent(GameObject* pParent);
 	};
 
-	inline std::shared_ptr<TransformComponent> dae::GameObject::GetTransform() const
+	inline TransformComponent* dae::GameObject::GetTransform() const
 	{
 		return m_pTransform;
+	}
+
+	//template: You decide where in the code what the class is you will work with. Returns pointer of type T->TextureComponent
+	template <typename T> 
+	T* GameObject::GetComponent(ComponentType type) const
+	{
+		T* pComponent{ static_cast<T*>(m_pComponents.find(type)->second) };
+		return pComponent;
+	}
+
+	inline bool GameObject::IsActive() const
+	{
+		bool isActive{ m_IsActive };
+		if (m_pParent)
+		{
+			isActive = m_IsActive && m_pParent->IsActive();
+		}
+		return isActive;
+	}
+
+	inline void GameObject::SetActive(bool active)
+	{
+		m_IsActive = active;
 	}
 
 	inline std::string dae::GameObject::GetName() const
 	{
 		return m_Name; 
+	}
+
+	inline void GameObject::SetDestroy()
+	{
+		m_NeedsDestroy = true; 
+	}
+
+	inline bool GameObject::GetDestroyed() const
+	{
+		return m_NeedsDestroy;
 	}
 }

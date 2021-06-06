@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
+
+#include "Audio.h"
 #include "SubjectComponent.h"
+#include "AudioLocator.h"
 
 using namespace dae;
 class Command
@@ -49,96 +52,97 @@ public:
 class KillCommand final : public Command
 {
 public:
-	KillCommand(std::weak_ptr<SubjectComponent> pSubject)
+	KillCommand(SubjectComponent* pSubject)
 		:m_pSubject{pSubject}
 	{}
 
 	virtual void Execute() override 
 	{
-		if (!m_pSubject.expired())
+		if (m_pSubject)
 		{
-			m_pSubject.lock()->Notify(Event::Kill);
+			m_pSubject->Notify(Event::Kill);
+			AudioLocator::GetAudioSystem()->PlaySound(0);
 		} 
 	}
 
 private:
-	std::weak_ptr<SubjectComponent> m_pSubject; 
+	SubjectComponent* m_pSubject;
 };
 
 class ColorChangeCommand final : public Command
 {
 public:
-	ColorChangeCommand(std::weak_ptr<SubjectComponent> pSubject)
+	ColorChangeCommand(SubjectComponent* pSubject)
 		:m_pSubject{ pSubject }
 	{}
 
 	virtual void Execute() override
 	{
-		if (!m_pSubject.expired())
+		if (m_pSubject)
 		{
-			m_pSubject.lock()->Notify(Event::ColorChange);
+			m_pSubject->Notify(Event::ColorChange);
 		}
 	}
 
 private:
-	std::weak_ptr<SubjectComponent> m_pSubject;
+	SubjectComponent* m_pSubject;
 };
 
 class KillByFlyingDiscCommand final : public Command
 {
 public:
-	KillByFlyingDiscCommand(std::weak_ptr<SubjectComponent> pSubject)
+	KillByFlyingDiscCommand(SubjectComponent* pSubject)
 		:m_pSubject{ pSubject }
 	{}
 
 	virtual void Execute() override
 	{
-		if (!m_pSubject.expired())
+		if (m_pSubject)
 		{
-			m_pSubject.lock()->Notify(Event::KillByFlyingDisc);
+			m_pSubject->Notify(Event::KillByFlyingDisc);
 		}
 	}
 
 private:
-	std::weak_ptr<SubjectComponent> m_pSubject;
+	SubjectComponent* m_pSubject;
 };
 
 class RemainingDiscCommand final : public Command
 {
 public:
-	RemainingDiscCommand(std::weak_ptr<SubjectComponent> pSubject)
+	RemainingDiscCommand(SubjectComponent* pSubject)
 		:m_pSubject{ pSubject }
 	{}
 
 	virtual void Execute() override
 	{
-		if (!m_pSubject.expired())
+		if (m_pSubject)
 		{
-			m_pSubject.lock()->Notify(Event::RemainingDisc);
+			m_pSubject->Notify(Event::RemainingDisc);
 		}
 	}
 
 private:
-	std::weak_ptr<SubjectComponent> m_pSubject;
+	SubjectComponent* m_pSubject;
 };
 
 class CatchingCommand final : public Command
 {
 public:
 
-	CatchingCommand(std::weak_ptr<SubjectComponent> pSubject)
+	CatchingCommand(SubjectComponent* pSubject)
 		:m_pSubject{ pSubject }
 	{}
 
 	virtual void Execute() override
 	{
-		if (!m_pSubject.expired())
+		if (m_pSubject)
 		{
-			m_pSubject.lock()->Notify(Event::CatchingSlick);
+			m_pSubject->Notify(Event::CatchingSlickSam);
 		}
 	}
 
 private:
-	std::weak_ptr<SubjectComponent> m_pSubject;
+	SubjectComponent* m_pSubject;
 };
 

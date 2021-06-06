@@ -10,8 +10,14 @@ dae::FPSComponent::FPSComponent()
 	, m_Frames{0}
 	, m_FPS{60}
 	, m_Elapsed{0.f}
-	, m_pText{std::make_shared<TextComponent>()}
+	, m_pText{new TextComponent()}
 {
+}
+
+dae::FPSComponent::~FPSComponent()
+{
+	delete m_pText;
+	m_pText = nullptr;
 }
 
 void dae::FPSComponent::Update(float elapsedSec)
@@ -34,7 +40,7 @@ void dae::FPSComponent::Render(glm::vec2 position)
 	m_pText->Render(position);
 }
 
-void dae::FPSComponent::SetFont(std::shared_ptr<Font> pFont)
+void dae::FPSComponent::SetFont(Font* pFont)
 {
 	m_pFont = pFont;
 }
