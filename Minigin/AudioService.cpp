@@ -27,7 +27,7 @@ void dae::AudioService::AddMusic(bool isLoop, int id, const std::string& audioPa
 
 void dae::AudioService::AddSoundEffect(int id, const std::string& audioPath)
 {
-	m_Infos.push_back(AudioInfo{true, false, m_pMusic.size(), id });
+	m_Infos.push_back(AudioInfo{true, false, m_pSoundEffects.size(), id });
 	m_pSoundEffects.push_back(Mix_LoadWAV((ResourceManager::GetInstance().GetDataPath() + audioPath).c_str()));
 }
 

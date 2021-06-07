@@ -13,18 +13,17 @@ namespace dae
 		CoilyComponent();
 
 		void Initialize(TileComponent* pStartTile, Scene* pScene, QBertComponent* pQbert);
-		virtual void Update(float elapsedSec) override;
 		virtual void Render(glm::vec2 position) override;
+		virtual void Update(float elapsedSec) override;
 
 		bool IsEgg() const;
 		bool IsHatching() const;
 
 		void Hatch(TileComponent* pHatchTile);
+		void Reset(TileComponent* pTile);
 
 		QBertComponent* GetQbert() const;
 
-		void Reset(TileComponent* pTile);
-	
 	private:
 		bool m_IsEgg;
 		bool m_IsHatching;

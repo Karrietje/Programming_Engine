@@ -8,7 +8,5 @@ namespace dae
 	public:
 		virtual void Update(float elapsedSec) override;
 		virtual void Render(glm::vec2 position) override;
-
-	private:
 	};
 }

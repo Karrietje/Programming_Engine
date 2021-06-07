@@ -108,6 +108,7 @@ void dae::AiComponent::SlickSamUpdate()
 {
 	int choice = 0;
 	TileComponent* pNewTile{ nullptr };
+
 	//Randomize how Sam picks his tiles
 	choice = std::rand() % 2;
 	if (choice == 0)

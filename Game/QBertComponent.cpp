@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include "QBertComponent.h"
 #include "Components.h"
 #include "GameObject.h"
@@ -9,11 +10,16 @@
 #include "ResourceManager.h"
 #include <SDL.h>
 #include <string>
+#include "Audio.h"
+#include "AudioLocator.h"
 
+using namespace dae;
 dae::QBertComponent::QBertComponent()
 	: m_CanMove{true}
 	, m_JumpTime{1.f}
 	, m_Timer{0.f}
+	, m_pCurrentTile{nullptr}
+	, m_pGameManagerComponent{nullptr}
 {
 	
 }
@@ -33,6 +39,7 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 		pNewTile = m_pCurrentTile->GetNeighbours().TopRight;
 		if (pNewTile)
 		{
+			AudioLocator::GetAudioSystem()->PlaySoundW(2);
 			m_pCurrentTile = pNewTile;
 			glm::vec2 newTilePos{ pNewTile->GetPosition() };
 			m_pGameObject->GetTransform()->SetPosition(newTilePos);
@@ -43,6 +50,7 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 		pSpinningDisk = m_pCurrentTile->GetSpinningDisk();
 		if (pSpinningDisk && pSpinningDisk->GetGameObject()->IsActive())
 		{
+			AudioLocator::GetAudioSystem()->PlaySoundW(2);
 			glm::vec2 newPos{ pSpinningDisk->GetPosition() };
 			m_pGameObject->GetTransform()->SetPosition(newPos);
 			pSpinningDisk->JumpOn(this);
@@ -54,6 +62,7 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 		pNewTile = m_pCurrentTile->GetNeighbours().BottomRight;
 		if (pNewTile)
 		{
+			AudioLocator::GetAudioSystem()->PlaySoundW(2);
 			m_pCurrentTile = pNewTile;
 			glm::vec2 newTilePos{ pNewTile->GetPosition() };
 			m_pGameObject->GetTransform()->SetPosition(newTilePos);
@@ -65,6 +74,7 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 		pNewTile = m_pCurrentTile->GetNeighbours().BottomLeft;
 		if (pNewTile)
 		{
+			AudioLocator::GetAudioSystem()->PlaySoundW(2);
 			m_pCurrentTile = pNewTile;
 			glm::vec2 newTilePos{ pNewTile->GetPosition() };
 			m_pGameObject->GetTransform()->SetPosition(newTilePos);
@@ -76,6 +86,7 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 		pNewTile = m_pCurrentTile->GetNeighbours().TopLeft;
 		if (pNewTile)
 		{
+			AudioLocator::GetAudioSystem()->PlaySoundW(2);
 			m_pCurrentTile = pNewTile;
 			glm::vec2 newTilePos{ pNewTile->GetPosition() };
 			m_pGameObject->GetTransform()->SetPosition(newTilePos);
@@ -86,6 +97,7 @@ void dae::QBertComponent::Move(MoveDirections moveDirection)
 		pSpinningDisk = m_pCurrentTile->GetSpinningDisk();
 		if (pSpinningDisk && pSpinningDisk->GetGameObject()->IsActive())
 		{
+			AudioLocator::GetAudioSystem()->PlaySoundW(2);
 			glm::vec2 newPos{ pSpinningDisk->GetPosition() };
 			m_pGameObject->GetTransform()->SetPosition(newPos);
 			pSpinningDisk->JumpOn(this);
@@ -190,17 +202,20 @@ void dae::QBertComponent::Update(float elapsedSec)
 	if (pEnemy && pEnemy->IsActive())
 	{
 		m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::CatchingSlickSam);
+
 		pEnemy->SetActive(false);
 	}
 	pEnemy = m_pCurrentTile->GetUggWrongway();
 	if (pEnemy && pEnemy->IsActive())
 	{
+		AudioLocator::GetAudioSystem()->PlaySoundW(1);
 		m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::Kill);
 		m_pGameManagerComponent->SoftReset();
 	}
 	pEnemy = m_pCurrentTile->GetCoily();
 	if (pEnemy && pEnemy->IsActive())
 	{
+		AudioLocator::GetAudioSystem()->PlaySoundW(1);
 		m_pGameObject->GetComponent<SubjectComponent>(ComponentType::SubjectComponent)->Notify(Event::Kill);
 		m_pGameManagerComponent->SoftReset();
 	}

@@ -22,25 +22,25 @@ namespace dae
 
 		int GetLives() const;
 
+		void KilledCoily();
 		void Move(MoveDirections moveDirection);
 		void Reset(TileComponent* pStartTile);
 
-		void KilledCoily();
 	private:
+		void SetCurrentTile(TileComponent* pTile);
+		friend class SpinningDisksComponent;
+
 		bool m_CanMove;
 
-		TileComponent* m_pCurrentTile;
-		std::vector<GameObject*> m_pHearts;
-
-		GameManagerComponent* m_pGameManagerComponent;
-		
 		int m_MaxHearts = 3;
-
+		
 		const float m_JumpTime; 
 		float m_Timer; 
 
-		friend class SpinningDisksComponent;
-		void SetCurrentTile(TileComponent* pTile);
+		GameManagerComponent* m_pGameManagerComponent;
+		TileComponent* m_pCurrentTile;
+
+		std::vector<GameObject*> m_pHearts;
 	};
 }
 

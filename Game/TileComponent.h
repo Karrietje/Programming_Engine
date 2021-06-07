@@ -24,46 +24,45 @@ namespace dae
 		TileComponent();
 		
 		void Initialize(Scene* pScene, glm::vec2 position, TileManager* pTileManager, int level = 0);
+		void JumpOn(SubjectComponent* pSubjectComponent);
 		void SetTopRightTile(TileComponent* pTile);
 		void SetBottomRightTile(TileComponent* pTile);
 		void SetBottomLeftTile(TileComponent* pTile);
 		void SetTopLeftTile(TileComponent* pTile);
 		void SetLeftTile(TileComponent* pTile);
 		void SetRightTile(TileComponent* pTile);
-
-		SpinningDisksComponent* GetSpinningDisk() const;
 		void SetSpinningDisk(SpinningDisksComponent* pSpinningDisk);
-
-		void JumpOn(SubjectComponent* pSubjectComponent);
 		void Revert(); 
 
+		void SetCoily(GameObject* pCoily);
+		void SetSlickSam(GameObject* pEnemy);
+		void SetUggWrongway(GameObject* pEnemy);
+
+		SpinningDisksComponent* GetSpinningDisk() const;
 		Neighbours GetNeighbours() const;
 		glm::vec2 GetPosition() const;
 		glm::vec2 GetSidePosition(bool left) const;
 		GameObject* GetSlickSam() const;
 		GameObject* GetUggWrongway() const;
 		GameObject* GetCoily() const;
-		void SetSlickSam(GameObject* pEnemy);
-		void SetUggWrongway(GameObject* pEnemy);
-		void SetCoily(GameObject* pCoily);
 
 		virtual void Update(float elapsedSec) override;
 		virtual void Render(glm::vec2 position) override;
-		
 
 	private:
 		bool m_IsRightColor;
 		bool m_ColorCyclesBack;
 
-		Neighbours m_Neighbours;
-		TileManager* m_pTileManager;
-
 		int m_CurrentColor;
-		std::vector<GameObject*> m_pColors;
+		
+		TileManager* m_pTileManager;
+		Neighbours m_Neighbours;
+
+		GameObject* m_pCoily;
 		GameObject* m_pSlickSam; 
 		GameObject* m_pUggWrongway;
-		GameObject* m_pCoily;
 
+		std::vector<GameObject*> m_pColors;
 		SpinningDisksComponent* m_pSpinningDisk;
 	};
 }

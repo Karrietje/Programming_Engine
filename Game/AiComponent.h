@@ -15,30 +15,32 @@ namespace dae
 			UggWrongway
 		};
 		AiComponent(TileComponent* pStartTile, Type type, bool left = false);
-		/*~AiComponent(); */
-		void Initialize(); 
-		Type GetType() const; 
-		virtual void Update(float elapsedSec) override;
+
 		virtual void Render(glm::vec2 position) override;
+		virtual void Update(float elapsedSec) override;
+		
+		void Initialize(); 
 		void Reset(TileComponent* pTile); 
+		
+		Type GetType() const; 
 
 	private:
-		bool m_IsLeftOnTile;
-		bool m_Previous;
-
-		TileComponent* m_pCurrentTile;
-		CoilyComponent* m_pCoilyComponent;
-		Type m_Type; 
-
-		const float m_MoveTime; 
-		float m_Timer;
-
-		void SlickSamUpdate();
 		void CoilyUpdate();
+		void SetCoilyComponent(CoilyComponent* pCoilyComponent);
+		void SlickSamUpdate();
 		void UggWrongwayUpdate();
 
 		friend class CoilyComponent;
-		void SetCoilyComponent(CoilyComponent* pCoilyComponent);
+
+		bool m_Previous;
+		bool m_IsLeftOnTile;
+
+		float m_Timer;
+		const float m_MoveTime; 
+		
+		CoilyComponent* m_pCoilyComponent;
+		TileComponent* m_pCurrentTile;
+		Type m_Type; 
 	};
 }
 

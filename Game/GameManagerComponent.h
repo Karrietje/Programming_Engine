@@ -19,16 +19,16 @@ namespace dae
 		virtual void Update(float elapsedSec) override;
 		virtual void Render(glm::vec2 position) override;
 
+		void NextLevel(); 
 		void SoftReset();
 
-		void NextLevel(); 
 	private:
+		float m_CoilySpawnTime;
+		float m_GameTime; 
 		float m_SlickSpawnTime;
 		float m_SamSpawnTime; 
 		float m_UggSpawnTime;
 		float m_WrongWaySpawnTime;
-		float m_CoilySpawnTime;
-		float m_GameTime; 
 
 		bool m_SpawnSlick;
 		bool m_SpawnSam;
@@ -37,18 +37,19 @@ namespace dae
 		bool m_SpawnCoily;
 
 		int m_DeadPlayers;
+		int m_Level;
+		const int m_MaxLevel; 
 
+		GameObject* m_pCoily;
 		GameObject* m_pSlick;
 		GameObject* m_pSam;
 		GameObject* m_pUgg;
 		GameObject* m_pWrongWay;
-		GameObject* m_pCoily;
+
+		Scene* m_pScene; 
 
 		std::vector<GameObject*> m_pQBerts; 
 
-		int m_Level;
-		const int m_MaxLevel; 
-		Scene* m_pScene; 
 	};
 
 }

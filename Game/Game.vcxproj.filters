@@ -39,9 +39,6 @@
     <ClCompile Include="SpinningDisksComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SlickSamComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CoilyComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,9 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SpinningDisksComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SlickSamComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CoilyComponent.h">

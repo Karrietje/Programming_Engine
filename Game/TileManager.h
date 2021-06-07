@@ -14,11 +14,11 @@ namespace dae
 	class TileManager final : public Singleton<TileManager>
 	{
 	public:
-		void CreateLevels(const std::string& file, Scene* pScene, int level);
 
 		const std::vector<std::vector<TileComponent*>>& GetTiles(int level) const;
 		const std::vector<SpinningDisksComponent*>& GetSpinningDisks(int level) const;
 
+		void CreateLevels(const std::string& file, Scene* pScene, int level);
 		void SetTile(bool right);
 		void SetGameManager(GameManagerComponent* pGameComponent); 
 

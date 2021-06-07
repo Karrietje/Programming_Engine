@@ -28,6 +28,7 @@ dae::GameManagerComponent::GameManagerComponent(Scene* pScene, GameMode gameMode
 	, m_Level{0}
 	, m_MaxLevel{3}
 	, m_pScene{pScene}
+	, m_DeadPlayers{0}
 {
 	
 	auto go = new GameObject();
@@ -38,40 +39,10 @@ dae::GameManagerComponent::GameManagerComponent(Scene* pScene, GameMode gameMode
 
 	pScene->Add(go, 0);
 
-	/*go = new GameObject();*/
+	AudioLocator::GetAudioSystem()->AddSoundEffect(0, "Sounds/Start.mp3");
+	AudioLocator::GetAudioSystem()->AddSoundEffect(1, "Sounds/Hit.mp3");
+	AudioLocator::GetAudioSystem()->AddSoundEffect(2, "Sounds/Jump.mp3");
 
-	/*textureComp = new TextureComponent();
-	textureComp->SetTexture("logo.png");
-	go->AddComponent(ComponentType::TextureComponent, textureComp);
-
-	go->GetTransform()->SetPosition(216, 180);
-
-	scene.Add(go);*/
-
-	/*go = new GameObject();
-
-	auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto textComp = new TextComponent();
-	textComp->SetFont(font);
-	textComp->SetText("Programming 4 Assignment");
-	go->AddComponent(ComponentType::TextComponent, textComp);
-
-	go->GetTransform()->SetPosition(80, 20);
-
-	scene.Add(go);*/
-
-	/*go = new GameObject();
-
-	font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
-	auto FPSComp = new FPSComponent();
-	FPSComp->SetFont(font);
-	go->AddComponent(ComponentType::FPSComponent, FPSComp);
-
-	go->GetTransform()->SetPosition(10, 10);
-
-	scene.Add(go);*/
-
-	AudioLocator::GetAudioSystem()->AddSoundEffect(0, "QbertDead.wav");
 
 	TileManager::GetInstance().CreateLevels("Levels/Level1.txt", pScene, m_MaxLevel);
 	TileManager::GetInstance().SetGameManager(this);
@@ -101,6 +72,7 @@ dae::GameManagerComponent::GameManagerComponent(Scene* pScene, GameMode gameMode
 	GameObject* pQbert{ nullptr };
 	QBertComponent* pQbertComp{ nullptr };
 	PointObserver* pPointObserver{ nullptr };
+
 	switch (gameMode)
 	{
 	case dae::GameManagerComponent::GameMode::Single:
@@ -137,8 +109,8 @@ dae::GameManagerComponent::GameManagerComponent(Scene* pScene, GameMode gameMode
 		break;
 	}
 
+	//Slick
 	m_pSlick = new GameObject();
-
 	m_pSlick->GetTransform()->SetPosition(TileManager::GetInstance().GetTiles(m_Level)[1][0]->GetPosition());
 	auto spriteComponent = new SpriteSheetComponent();
 	SpriteSheetComponent::SpriteInfo spriteInfo;
@@ -162,9 +134,8 @@ dae::GameManagerComponent::GameManagerComponent(Scene* pScene, GameMode gameMode
 	m_pSlick->SetActive(false);
 	pScene->Add(m_pSlick, 2);
 
-
+	//Sam
 	m_pSam = new GameObject();
-
 	m_pSam->GetTransform()->SetPosition(TileManager::GetInstance().GetTiles(m_Level)[1][1]->GetPosition());
 	spriteComponent = new SpriteSheetComponent();
 	SpriteSheetComponent::SpriteInfo spriteInfo1;
@@ -236,99 +207,12 @@ dae::GameManagerComponent::GameManagerComponent(Scene* pScene, GameMode gameMode
 	pScene->Add(m_pUgg, 2);
 
 	m_pCoily = new GameObject();
-
 	CoilyComponent* pCoilyComponent = new CoilyComponent();
 	m_pCoily->AddComponent(ComponentType::CoilyComponent, pCoilyComponent);
 	pCoilyComponent->Initialize(TileManager::GetInstance().GetTiles(m_Level)[1][0], pScene, pQbertComp);
 	m_pCoily->SetActive(false);
 
 	pScene->Add(m_pCoily, 2);
-
-	//go = new GameObject("Player 1");
-
-	//textureComp = new TextureComponent();
-	//textureComp->SetTexture("Qbert.png");
-	//go->AddComponent(ComponentType::TextureComponent, textureComp);
-
-	////Components
-	//auto healthComp = new HealthComponent(3);
-	//go->AddComponent(ComponentType::HealthComponent, healthComp);
-
-	//auto pointComp = new PointComponent();
-	//go->AddComponent(ComponentType::PointComponent, pointComp);
-
-	////SubjectComponent
-	//auto subjectComp = new SubjectComponent();
-	//go->AddComponent(ComponentType::SubjectComponent, subjectComp);
-
-	////Observers
-	//auto pointObserver = new PointObserver(pointComp);
-	//subjectComp->AddObserver(pointObserver);
-
-	//auto healthObserver = new HealthObserver(healthComp);
-	//subjectComp->AddObserver(healthObserver);
-
-	////Button input
-	//KillCommand* pKill{ new KillCommand(subjectComp) };
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_A, InputType::KeyDown }, pKill);
-
-	//ColorChangeCommand* pColorChange{ new ColorChangeCommand {subjectComp} };
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_B, InputType::KeyDown }, pColorChange);
-
-	//KillByFlyingDiscCommand* pKillByFlyingDisc{ new KillByFlyingDiscCommand {subjectComp} };
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_Y, InputType::KeyDown }, pKillByFlyingDisc);
-
-	//RemainingDiscCommand* pRemainingDisc{ new RemainingDiscCommand {subjectComp} };
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_X, InputType::KeyDown }, pRemainingDisc);
-
-	//CatchingCommand* pCatching{ new CatchingCommand {subjectComp} };
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_RSHOULDER, InputType::KeyDown }, pCatching);
-
-	//scene.Add(go);
-
-	////Player 2
-
-	//go = std::make_shared<GameObject>("Player 2");
-
-	//textureComp = std::make_shared<TextureComponent>();
-	//textureComp->SetTexture("Qbert.png");
-	//go->AddComponent(ComponentType::TextureComponent, textureComp);
-
-	////Components
-	//healthComp = std::make_shared<HealthComponent>(3);
-	//go->AddComponent(ComponentType::HealthComponent, healthComp);
-
-	//pointComp = std::make_shared<PointComponent>();
-	//go->AddComponent(ComponentType::PointComponent, pointComp);
-
-	////SubjectComponent
-	//subjectComp = std::make_shared<SubjectComponent>();
-	//go->AddComponent(ComponentType::SubjectComponent, subjectComp);
-
-	////Observers
-	//pointObserver = std::make_shared<PointObserver>(pointComp);
-	//subjectComp->AddObserver(pointObserver);
-
-	//healthObserver = std::make_shared<HealthObserver>(healthComp);
-	//subjectComp->AddObserver(healthObserver);
-
-	////Button input
-	//pKill = std::make_shared<KillCommand>(subjectComp);
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_DOWN, InputType::KeyDown }, pKill);
-
-	//pColorChange = std::make_shared<ColorChangeCommand>(subjectComp);
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_RIGHT, InputType::KeyDown }, pColorChange);
-
-	//pKillByFlyingDisc = std::make_shared<KillByFlyingDiscCommand>(subjectComp);
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_UP, InputType::KeyDown }, pKillByFlyingDisc);
-
-	//pRemainingDisc = std::make_shared<RemainingDiscCommand>(subjectComp);
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_DPAD_LEFT, InputType::KeyDown }, pRemainingDisc);
-
-	//pCatching = std::make_shared<CatchingCommand>(subjectComp);
-	//InputManager::GetInstance().AddCommand(ControllerInput{ VK_PAD_LSHOULDER, InputType::KeyDown }, pCatching);
-
-	//scene.Add(go);
 }
 
 void dae::GameManagerComponent::Update(float elapsedSec)
@@ -404,7 +288,9 @@ void dae::GameManagerComponent::NextLevel()
 	if (m_Level ==  m_MaxLevel)
 	{
 		std::cout << "Game Won! Change scene!\n"; 
-		//SceneManager::GetInstance().SetCurrentScene("EndScene");
+		SceneManager::GetInstance().SetCurrentScene("EndScene");
+
+	
 	}
 	else
 	{
