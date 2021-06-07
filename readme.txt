@@ -1,4 +1,3 @@
-My engine can run in x86 and x64 release/debug build. 
 I use IMGUI for the buttons. For the fonts I'm using the Resourcemanager. 
 
 **COMPONENTS OVER INHERITANCE** 
