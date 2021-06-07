@@ -5,8 +5,8 @@ I use IMGUI for the buttons. For the fonts I'm using the Resourcemanager.
 => This means I tried to avoid in every way to use inheritance so I used a lot of components(see project).
 I prefer to get the component I want to talk to from the GameObject. This is a simple and fast solution and it
 is tightly coupled! Your composed class can be easily added without repercussions. It also allows us to delay the creation
-of components until they are needed. So during programming, when you need something added to your character (like some kind of weapon), 
-composition makes it easy to adjust it. They can also be dynamically be changed! 
+of components until they are needed. So during programming, when you need something added to your character (like some kind of weapon), compositions
+make it easier to adjust it. They can also be dynamically be changed! 
 Components are best explained when using unity. In my project I made a class "Components" and "GameComponents"
 where I add every component that I have to use during the programming phase. I can change them whenever I want during the process. 
 
